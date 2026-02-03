@@ -8,26 +8,27 @@ tags: [{{TAGS}}]
 
 # {{TITLE}}
 
-> {{SUMMARY}}
+{{OPENING_HOOK}}
 
-## The Context
+## {{FIRST_SECTION_TITLE}}
 
-{{CONTEXT}}
+{{NARRATIVE_CONTENT}}
 
-## The Discovery
+## {{WHAT_WORKED_SECTION}}
 
-{{DISCOVERY}}
+{{DISCOVERY_NARRATIVE}}
 
-## Code Highlights
+## {{COMPLICATIONS_SECTION}}
 
-```{{LANGUAGE}}
-{{CODE}}
-```
+{{GOTCHAS_NARRATIVE}}
 
-## Key Takeaways
+## What I'm Still Figuring Out
 
-{{TAKEAWAYS}}
+{{OPEN_QUESTIONS_NARRATIVE}}
 
-## Open Questions
+---
 
-{{QUESTIONS}}
+NOTE TO SKILL: This template shows structure only. Do NOT fill it in like a form.
+Instead, write naturally following the Writing Style guidelines in SKILL.md.
+Each section title should be specific to the content (e.g., "The NTFS Surprise" not "Issue #1").
+The content should be prose narrative, not bullet points.

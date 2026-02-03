@@ -21,6 +21,12 @@ A Claude Code skill that generates tech blog entries from development activity. 
 └── templates/
     ├── post.md.template          # Blog post structure
     └── index.md.template         # Index page structure
+
+~/Documents/online-personal/Tech Blog/
+├── .state.json           # Tracks last run timestamp for incremental updates
+├── _index.md             # Dashboard/index of all topics
+├── Open/                 # Active topics being developed
+└── Closed/               # Completed topics with date prefix
 ```
 
 ## Conversation Data Source
@@ -33,14 +39,19 @@ JSONL format with `type: "user"` and `type: "assistant"` entries.
 
 ## Workflow When Skill Runs
 
-1. Parse `--days N` argument (default 7)
-2. Run bash loop to gather git commits/diffs from all repos
-3. Run `gather_conversations.py` to extract recent prompts
-4. Read existing blog state (open topics, index)
-5. Identify interesting content (high recall)
-6. Generate/update markdown files in Obsidian
-7. Update index dashboard
-8. Summarize changes to user
+1. Parse arguments and check `.state.json` for last run timestamp
+2. Determine lookback mode:
+   - If `--days N` or `--full` provided: use days-based lookback
+   - If state file exists: continue from last run timestamp
+   - Otherwise: use default 7-day lookback
+3. Run bash loop to gather git commits/diffs since cutoff
+4. Run `gather_conversations.py --since` or `--days` to extract prompts
+5. Read existing blog state (open topics, index)
+6. Identify interesting content (high recall)
+7. Generate/update markdown files in Obsidian
+8. Update index dashboard
+9. Save current timestamp to `.state.json`
+10. Summarize changes to user
 
 ## Design Decisions
 

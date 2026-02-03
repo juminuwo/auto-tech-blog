@@ -54,6 +54,13 @@ def is_within_days(file_path: Path, days: int) -> bool:
     return mtime >= cutoff
 
 
+def is_after_timestamp(file_path: Path, since_timestamp: str) -> bool:
+    """Check if file was modified after the given ISO timestamp."""
+    cutoff = datetime.fromisoformat(since_timestamp.replace('Z', '+00:00').replace('+00:00', ''))
+    mtime = datetime.fromtimestamp(file_path.stat().st_mtime)
+    return mtime >= cutoff
+
+
 def is_meaningful_message(content: str) -> bool:
     """Filter out noise like /clear, empty messages, command outputs."""
     if not content or len(content.strip()) < 10:
@@ -146,9 +153,14 @@ def extract_user_messages(jsonl_path: Path, include_assistant: bool = False) -> 
     return messages
 
 
-def gather_conversations(days: int = 7, include_assistant: bool = False) -> dict:
+def gather_conversations(days: int = 7, since: str = None, include_assistant: bool = False) -> dict:
     """
     Gather recent conversations grouped by project/repo.
+
+    Args:
+        days: Look back N days (used if since is not provided)
+        since: ISO timestamp to look back from (overrides days if provided)
+        include_assistant: Include assistant responses
 
     Returns:
         dict: {repo_name: [list of conversation summaries]}
@@ -173,7 +185,11 @@ def gather_conversations(days: int = 7, include_assistant: bool = False) -> dict
             if jsonl_file.name == "sessions-index.json":
                 continue
 
-            if not is_within_days(jsonl_file, days):
+            # Use timestamp if provided, otherwise use days
+            if since:
+                if not is_after_timestamp(jsonl_file, since):
+                    continue
+            elif not is_within_days(jsonl_file, days):
                 continue
 
             messages = extract_user_messages(jsonl_file, include_assistant)
@@ -232,13 +248,14 @@ def print_conversations(conversations: dict, verbose: bool = False):
 def main():
     parser = argparse.ArgumentParser(description="Gather recent Claude Code conversations")
     parser.add_argument("--days", type=int, default=7, help="Look back N days (default: 7)")
+    parser.add_argument("--since", type=str, help="ISO timestamp to look back from (overrides --days)")
     parser.add_argument("--include-assistant", action="store_true", help="Include assistant responses")
     parser.add_argument("--verbose", action="store_true", help="Show full message content")
     parser.add_argument("--json", action="store_true", help="Output as JSON")
 
     args = parser.parse_args()
 
-    conversations = gather_conversations(args.days, args.include_assistant)
+    conversations = gather_conversations(args.days, args.since, args.include_assistant)
 
     if args.json:
         print(json.dumps(conversations, indent=2, default=str))
