@@ -1,0 +1,33 @@
+---
+status: open
+created: {{DATE}}
+updated: {{DATE}}
+repos: [{{REPOS}}]
+tags: [{{TAGS}}]
+---
+
+# {{TITLE}}
+
+> {{SUMMARY}}
+
+## The Context
+
+{{CONTEXT}}
+
+## The Discovery
+
+{{DISCOVERY}}
+
+## Code Highlights
+
+```{{LANGUAGE}}
+{{CODE}}
+```
+
+## Key Takeaways
+
+{{TAKEAWAYS}}
+
+## Open Questions
+
+{{QUESTIONS}}
